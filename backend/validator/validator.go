@@ -6,6 +6,26 @@ import (
 )
 
 /**
+** Check the create command
+**/
+func CheckCreate(command string) bool {
+	if strings.Contains(strings.ToLower(command), "create") {
+		return true
+	}
+	return false
+}
+
+/**
+** Check the table keyword
+**/
+func CheckTable(table string) bool {
+	if strings.Contains(strings.ToLower(table), "table") {
+		return true
+	}
+	return false
+}
+
+/**
 ** Validate the Table Information
 **/
 func ValidateTableName(TableName string) bool {
@@ -14,7 +34,7 @@ func ValidateTableName(TableName string) bool {
 }
 
 /**
-** Check if the ColumnType is Right
+** Check if the Column Type is Right
 **/
 func ValidateColumnType(ColumnType string) bool {
 
@@ -45,6 +65,16 @@ func ValidateColumnType(ColumnType string) bool {
 **/
 func ValidatePrimaryKey(PrimaryKey string) bool {
 	if strings.EqualFold(PrimaryKey, "PrimaryKey") {
+		return true
+	}
+	return false
+}
+
+/**
+** Check the Reference Keyword
+**/
+func ValidateReference(Reference string) bool {
+	if strings.EqualFold(Reference, "Reference") {
 		return true
 	}
 	return false
