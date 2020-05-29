@@ -131,6 +131,9 @@ func TestValidateColumnType(test *testing.T) {
 	}
 }
 
+/**
+Testing ValidateReference() Method in a Test Driven Data Way
+**/
 func TestValidateReference(test *testing.T) {
 	var tests = []struct {
 		RefName string
@@ -151,6 +154,37 @@ func TestValidateReference(test *testing.T) {
 		testname := tt.RefName
 		test.Run(testname, func(test *testing.T) {
 			answ := validator.ValidateReference(tt.RefName)
+			if answ != tt.output {
+				test.Error("Got", answ, "Wanted", tt.output)
+			}
+		})
+	}
+}
+
+//Testing ValidatePrimaryKey
+/**
+Testing ValidatePrimaryKey() Method in a Test Driven Data Way
+**/
+func TestValidatePrimaryKey(test *testing.T) {
+	var tests = []struct {
+		PrimaryKey string
+		output     bool
+	}{
+		{"PrimaryKey", true},
+		{"primarykey", true},
+		{"RefErence", false},
+		{"primarykey", true},
+		{"reference", false},
+		{"a", false},
+		{"Animals", false},
+		{"2", false},
+		{"1", false},
+		{"productname", false},
+	}
+	for _, tt := range tests {
+		testname := tt.PrimaryKey
+		test.Run(testname, func(test *testing.T) {
+			answ := validator.ValidatePrimaryKey(tt.PrimaryKey)
 			if answ != tt.output {
 				test.Error("Got", answ, "Wanted", tt.output)
 			}
