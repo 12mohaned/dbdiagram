@@ -1,11 +1,8 @@
-//A updated verision of dbdiagram
-
 package main
 
 import (
 	"backend/database"
 	"backend/validator"
-	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
@@ -23,8 +20,9 @@ const (
 Table
 */
 type Table struct {
-	Tablename string
-	Row       []row
+	Tablename  string
+	primaryKey string
+	Row        []row
 }
 type row struct {
 	Columnname  string
@@ -33,6 +31,14 @@ type row struct {
 
 type Tables struct {
 	Tables []Table
+}
+
+/**
+Docs on how to use the Tool
+*/
+func DocsHandler(Response http.ResponseWriter, Request *http.Request) {
+	template, _ := template.ParseFiles("Docs.html")
+	template.Execute(Response, nil)
 }
 
 /**
@@ -52,7 +58,6 @@ func HomeHandler(Response http.ResponseWriter, Request *http.Request) {
 			isTable := validator.CheckTable(QueryTokenized[1])
 			if isTable {
 				table = CreateTable(QueryTokenized, QueryTokenized[2])
-				fmt.Println(table)
 				if len(table.Row) != 0 {
 					for i := 0; i < len(table.Row); i++ {
 						Colnames = append(Colnames, table.Row[i].Columnname)
@@ -64,7 +69,11 @@ func HomeHandler(Response http.ResponseWriter, Request *http.Request) {
 		}
 	} else {
 		if len(QueryTokenized) == 3 {
-			CreateRef(QueryTokenized)
+			if !CreateRef(QueryTokenized) {
+				if CheckPrimaryKey(QueryTokenized) {
+					database.AddprimaryKey(QueryTokenized[2], QueryTokenized[1])
+				}
+			}
 		}
 	}
 	databasetable := database.GetTables()
@@ -88,10 +97,6 @@ func ConvertTables(tablename string, columnname []string, columnvalue []string) 
 	}
 	return Table{Tablename: tablename, Row: rows}
 }
-func main() {
-	http.HandleFunc("/Home", HomeHandler)
-	http.ListenAndServe(":8000", nil)
-}
 
 /**
 * * creates a new Table and Draw it
@@ -113,8 +118,6 @@ func CreateTable(query []string, tableName string) Table {
 			if validator.ValidateColumnType(query[i]) {
 				values = append(values, query[i])
 
-			} else {
-				return Table{}
 			}
 			row := row{Columnname: names[j], Columnvalue: values[j]}
 			rows = append(rows, row)
@@ -145,4 +148,23 @@ func CreateRef(query []string) bool {
 		}
 	}
 	return true
+}
+
+/**
+* * Creates Relation between Two Tables
+ */
+func CheckPrimaryKey(query []string) bool {
+	if validator.ValidatePrimaryKey(query[0]) {
+		if database.TableExists(query[1]) {
+			if database.ColumnExists(query[2]) {
+				return true
+			}
+		}
+	}
+	return false
+}
+func main() {
+	http.HandleFunc("/Home", HomeHandler)
+	http.HandleFunc("/Docs", DocsHandler)
+	http.ListenAndServe(":8000", nil)
 }
