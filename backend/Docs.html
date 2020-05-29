@@ -1,0 +1,127 @@
+<html>
+    <style>
+        * {box-sizing: border-box;}
+        
+        body { 
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .header {
+          overflow: hidden;
+          background-color: white;
+          padding: 15px 10px;
+        }
+        
+        .header a {
+          float: left;
+          color: black;
+          text-align: center;
+          padding: 12px;
+          text-decoration: none;
+          font-size: 18px; 
+          line-height: 25px;
+          border-radius: 4px;
+        }
+        
+        .header a.logo {
+          font-size: 25px;
+          font-weight: bold;
+        }
+        
+        .header a:hover {
+          background-color: yellowgreen;
+          color: black;
+        }
+        
+        .header a.active {
+          background-color: dodgerblue;
+          color: white;
+        }
+        
+        .header-right {
+          float: right;
+        }
+        
+        @media screen and (max-width: 500px) {
+          .header a {
+            float: none;
+            display: block;
+            text-align: left;
+          }
+          
+          .header-right {
+            float: none;
+          }
+        }
+         #SubmitButton {
+           width: 5%;
+           margin-left: 46%;
+         }
+         .mydiv {
+         position: absolute;
+         z-index: 9;
+         background-color: #f1f1f1;
+         border: 1px solid #d3d3d3;
+         text-align: center;
+        }
+
+         .mydivheader {
+         padding: 15px;
+         cursor: move;
+         z-index: 10;
+         background-color: #2196F3;
+         color: #fff;
+}
+        </style>
+    <head>
+         <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    </head>
+
+    <div class="header">
+        <div class="header-right">
+          <a href="/Home">Home</a>
+          <a class="active" href="/Docs">Docs</a>
+        </div>
+      </div> 
+
+    <ul class="collapsible">
+        <li>
+          <div class="collapsible-header">Create Table </div>
+          <div class="collapsible-body">
+            <span>Create Table
+            </span>
+
+            <div>
+                <span>
+                    <strong>Create Table [tablename] [columnname] [columntype] [columnname] [columntype]</strong>
+                </span>           
+             </div>
+          <div>
+            <span><strong>Supported Data Types : int,varchar, text, float, Timestamp</strong></span>
+          </div>
+        </div>
+        </li>
+        <li>
+          <div class="collapsible-header">Add PrimaryKey</div>
+          <div class="collapsible-body"><span><strong>PrimaryKey [TableName] [ColumnName]</strong></span></div>
+        </li>
+        <li>
+          <div class="collapsible-header">Construct a relation between two tables</div>
+          <div class="collapsible-body"><span><strong>[TableName] Reference [TableName]</strong></span></div>
+        </li>
+      </ul>
+      <script>
+         M.AutoInit();
+      document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.collapsible');
+    var instances = M.Collapsible.init(elems, options);
+  });
+      </script>
+      </html>
+
+            
