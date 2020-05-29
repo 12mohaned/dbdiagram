@@ -111,6 +111,38 @@ func TableExists(tableName string) bool {
 }
 
 /**
+*  ColumnExists
+* * Check if a column Exists
+ */
+func ColumnExists(columnname string) bool {
+	postgresconnection := initConnection()
+	db, err := sql.Open("postgres", postgresconnection)
+	if err != nil {
+		panic(err)
+	}
+	sqlStatement := `select columnname from tables`
+	row, err := db.Query(sqlStatement)
+	defer row.Close()
+	for row.Next() {
+		var columnnames []string
+		row.Scan(pq.Array(&columnnames))
+		if checkColumnname(columnnames, columnname) {
+			return true
+		}
+	}
+	return false
+}
+
+func checkColumnname(columns []string, columnname string) bool {
+	for i := 0; i < len(columns); i++ {
+		if columnname == columns[i] {
+			return true
+		}
+	}
+	return false
+}
+
+/**
 *  CreateRelation
 * * Create a new Relation
  */
@@ -123,6 +155,24 @@ func CreateNewRelation(tablename1 string, tablename2 string) {
 	sqlStatement := `INSERT INTO relations (tablename1, tablename2)
     Values ($1,$2)`
 	row, err := db.Query(sqlStatement, tablename1, tablename2)
+	if err != nil {
+		fmt.Println(row)
+		panic(err)
+	}
+}
+
+/**
+*  AddprimaryKey
+* * Add a Primarykey to the table
+ */
+func AddprimaryKey(columnname string, tablename string) {
+	postgresconnection := initConnection()
+	db, err := sql.Open("postgres", postgresconnection)
+	if err != nil {
+		panic(err)
+	}
+	sqlStatement := `Update tables set primarykey =$1 where tablename = $2`
+	row, err := db.Query(sqlStatement, columnname, tablename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
