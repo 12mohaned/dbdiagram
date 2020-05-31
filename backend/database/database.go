@@ -12,7 +12,7 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	Password = ""
+	Password = "tarekandamr12/"
 	dbname   = "dbdiagram"
 )
 
@@ -82,7 +82,7 @@ func DeleteTables(tablename string) bool {
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `delete from tables where tablename=$1`
+	sqlStatement := `delete from tables where tablename = $1`
 	row, err := db.Query(sqlStatement, tablename)
 	if err != nil {
 		fmt.Println(row)
@@ -107,7 +107,7 @@ func TableExists(tableName string) bool {
 		fmt.Println(row)
 		panic(err)
 	}
-	return row.Next()
+	return true
 }
 
 /**
@@ -173,6 +173,23 @@ func AddprimaryKey(columnname string, tablename string) {
 	}
 	sqlStatement := `Update tables set primarykey =$1 where tablename = $2`
 	row, err := db.Query(sqlStatement, columnname, tablename)
+	if err != nil {
+		fmt.Println(row)
+		panic(err)
+	}
+}
+
+/**
+Delete a Table
+*/
+func Droptable(tablename string) {
+	postgresconnection := initConnection()
+	db, err := sql.Open("postgres", postgresconnection)
+	if err != nil {
+		panic(err)
+	}
+	sqlStatement := `delete from tables where tablename = $1`
+	row, err := db.Query(sqlStatement, tablename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
