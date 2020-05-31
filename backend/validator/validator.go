@@ -79,3 +79,15 @@ func ValidateReference(Reference string) bool {
 	}
 	return false
 }
+
+/**
+** Check the Drop Keyword
+**/
+func ValidateDrop(Name string, table string) bool {
+	if strings.EqualFold(Name, "drop") {
+		if CheckTable(table) {
+			return true
+		}
+	}
+	return false
+}
