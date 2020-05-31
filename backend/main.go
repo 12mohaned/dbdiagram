@@ -72,6 +72,8 @@ func HomeHandler(Response http.ResponseWriter, Request *http.Request) {
 			if !CreateRef(QueryTokenized) {
 				if CheckPrimaryKey(QueryTokenized) {
 					database.AddprimaryKey(QueryTokenized[2], QueryTokenized[1])
+				} else {
+					CheckDeleteTable(QueryTokenized)
 				}
 			}
 		}
@@ -126,6 +128,17 @@ func CreateTable(query []string, tableName string) Table {
 	}
 	table = Table{Tablename: tableName, Row: rows}
 	return table
+}
+
+/**
+* * Delete a table from the database
+ */
+func CheckDeleteTable(query []string) {
+	if validator.ValidateDrop(query[0], query[1]) {
+		if database.TableExists(query[2]) {
+			database.Droptable(query[2])
+		}
+	}
 }
 
 /**
