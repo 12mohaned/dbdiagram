@@ -96,23 +96,29 @@
                   <a href="/Docs">Docs</a>
                 </div>
               </div> 
-
-<form>
-      <div class="input-field col s6">
-        <input name = "command" placeholder="Write Your Command" id="first_name" type="text" class="validate">
-        <label for="first_name">Write your command</label>
+<div style="background-color:white;">
+<form style="background-color: white;">
+      <div style="background-color:white;" class="input-field col s6">
+        <input style="background-color: white;" name = "command" placeholder="Write Your Command" id="first_name" type="text" class="validate">
+        <label style="background-color: white;" for="first_name">Write your command</label>
       </div>
-      <div id ="SubmitButton">
-        <button type="submit" class="btn btn-primary btn-block">Run</button>
+      <div style="background-color:white;" id ="SubmitButton">
+        <button  type="submit" class="btn btn-primary btn-block">Run</button>
       </div>
-    </div>
-    </form>
+    </form>    
+  </div>
+  </div>
 <div>
-  {{ range .Tables}}
-    <div class="mydiv">
+  {{range .Tables}}
+  {{$variable := .PrimaryKey}}
+  <div class="mydiv">
         <div class="mydivheader">{{ .Tablename}}</div>
-        {{ range .Row}}
-        <p style="color: lavender;">{{.Columnname}}</p>
+        {{range .Row}}
+        {{ if eq $variable .Columnname}}
+<p style="background:dimgrey;">{{ .Columnname}} (PK)</p>
+        {{ else }}
+        <p>{{ .Columnname}}</p>
+        {{ end}}
         {{end}}
       </div>
       {{end}}
