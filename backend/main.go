@@ -21,7 +21,7 @@ Table
 */
 type Table struct {
 	Tablename  string
-	primaryKey string
+	PrimaryKey string
 	Row        []row
 }
 type row struct {
@@ -80,7 +80,7 @@ func HomeHandler(Response http.ResponseWriter, Request *http.Request) {
 	}
 	databasetable := database.GetTables()
 	for i := 0; i < len(databasetable); i++ {
-		t := ConvertTables(databasetable[i].TableName, databasetable[i].Columnname, databasetable[i].Columnvalue)
+		t := ConvertTables(databasetable[i].TableName, databasetable[i].Columnname, databasetable[i].Columnvalue, databasetable[i].PrimaryKey)
 		tables = append(tables, t)
 	}
 	T := Tables{Tables: tables}
@@ -91,13 +91,13 @@ func HomeHandler(Response http.ResponseWriter, Request *http.Request) {
 /**
 * * Function which convert Database Table to tables
  */
-func ConvertTables(tablename string, columnname []string, columnvalue []string) Table {
+func ConvertTables(tablename string, columnname []string, columnvalue []string, primaryKey string) Table {
 	var rows []row
 	for i := 0; i < len(columnname); i++ {
 		Row := row{Columnname: columnname[i], Columnvalue: columnvalue[i]}
 		rows = append(rows, Row)
 	}
-	return Table{Tablename: tablename, Row: rows}
+	return Table{Tablename: tablename, Row: rows, PrimaryKey: primaryKey}
 }
 
 /**
