@@ -20,6 +20,7 @@ type DatabaseTable struct {
 	TableName   string
 	Columnname  []string
 	Columnvalue []string
+	PrimaryKey  string
 }
 
 func initConnection() string {
@@ -57,7 +58,7 @@ func GetTables() []DatabaseTable {
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `select tablename, columnname, columnvalues from tables`
+	sqlStatement := `select tablename, columnname, columnvalues, primarykey from tables`
 	row, err := db.Query(sqlStatement)
 	var Tables []DatabaseTable
 	defer row.Close()
@@ -65,8 +66,9 @@ func GetTables() []DatabaseTable {
 		var tablename string
 		var columnnames []string
 		var columnvalues []string
-		row.Scan(&tablename, pq.Array(&columnnames), pq.Array(&columnvalues))
-		table := DatabaseTable{TableName: tablename, Columnname: columnnames, Columnvalue: columnvalues}
+		var primarykey string
+		row.Scan(&tablename, pq.Array(&columnnames), pq.Array(&columnvalues), &primarykey)
+		table := DatabaseTable{TableName: tablename, Columnname: columnnames, Columnvalue: columnvalues, PrimaryKey: primarykey}
 		Tables = append(Tables, table)
 	}
 	return Tables
@@ -194,4 +196,27 @@ func Droptable(tablename string) {
 		fmt.Println(row)
 		panic(err)
 	}
+}
+
+/**
+Get PrimaryKey
+*/
+func GetPrimaryKey(tablename string) string {
+	postgresconnection := initConnection()
+	db, err := sql.Open("postgres", postgresconnection)
+	if err != nil {
+		panic(err)
+	}
+	var PrimaryKey string
+	sqlStatement := `select primarykey from tables where tablename=$1`
+	row, err := db.Query(sqlStatement, tablename)
+	if err != nil {
+		fmt.Println(row)
+		panic(err)
+	}
+	defer row.Close()
+	for row.Next() {
+		row.Scan(&PrimaryKey)
+	}
+	return PrimaryKey
 }
