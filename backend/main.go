@@ -12,12 +12,20 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	Password = ""
+	Password = "tarekandamr12/"
 	dbname   = "dbdiagram"
 )
 
 /*
-Table
+Database Struct
+*/
+type Database struct {
+	DatabaseName string
+	Tables       Tables
+}
+
+/*
+Table Struct
 */
 type Table struct {
 	Tablename  string
@@ -74,6 +82,14 @@ func HomeHandler(Response http.ResponseWriter, Request *http.Request) {
 					database.AddprimaryKey(QueryTokenized[2], QueryTokenized[1])
 				} else {
 					CheckDeleteTable(QueryTokenized)
+				}
+			} else {
+				if validator.CheckCreate(QueryTokenized[0]) {
+					if validator.CheckDatabase(QueryTokenized[1]) {
+						if validator.ValidateDatabaseName(QueryTokenized[2]) {
+							database.CreateNewDatabase(QueryTokenized[2])
+						}
+					}
 				}
 			}
 		}
@@ -175,6 +191,10 @@ func CheckPrimaryKey(query []string) bool {
 		}
 	}
 	return false
+}
+
+func createdatabase(query []string) {
+
 }
 func main() {
 	http.HandleFunc("/Home", HomeHandler)

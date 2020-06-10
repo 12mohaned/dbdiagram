@@ -26,10 +26,28 @@ func CheckTable(table string) bool {
 }
 
 /**
-** Validate the Table Information
+** Check the Database keyword
 **/
-func ValidateTableName(TableName string) bool {
-	isValid, _ := regexp.MatchString("[a-zA-Z]{3,}", TableName)
+func CheckDatabase(databasename string) bool {
+	if strings.Contains(strings.ToLower(table), "database") {
+		return true
+	}
+	return false
+}
+
+/**
+** Validate the Database Name
+**/
+func ValidateTableName(databasename string) bool {
+	isValid, _ := regexp.MatchString("[a-zA-Z]{3,40}", databasename)
+	return isValid
+}
+
+/**
+** Validate the Table Name
+**/
+func ValidateDatabaseName(TableName string) bool {
+	isValid, _ := regexp.MatchString("[a-zA-Z]{3,40}", TableName)
 	return isValid
 }
 

@@ -12,7 +12,7 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	Password = "tarekandamr12/"
+	Password = ""
 	dbname   = "dbdiagram"
 )
 
@@ -29,17 +29,37 @@ func initConnection() string {
 }
 
 /**
-*  CreateNewGroup
+*  CreateNewDatabase
+* * Create a New Database
+ */
+func CreateNewDatabase(databasename string) {
+	postgresconnection := initConnection()
+	db, err := sql.Open("postgres", postgresconnection)
+	if err != nil {
+		panic(err)
+	}
+	sqlStatement := `INSERT INTO database(databasename)
+                    Values ($1)`
+	row, err := db.Query(sqlStatement, databasename)
+	if err != nil {
+		fmt.Println(row)
+		panic(err)
+	}
+
+}
+
+/**
+*  CreateNewTable
 * * Create a New Table
  */
-func CreateNewTable(tableName string, columnnames []string, columnvalues []string) {
+func CreateNewTable(databasename string, tableName string, columnnames []string, columnvalues []string) {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
 	sqlStatement := `INSERT INTO tables (tablename, columnname, columnvalues)
-                    Values ($1,$2,$3)`
+					Values ($1,$2,$3)`
 	row, err := db.Query(sqlStatement, tableName, pq.Array(columnnames), pq.Array(columnvalues))
 	if err != nil {
 		fmt.Println(row)
@@ -50,16 +70,16 @@ func CreateNewTable(tableName string, columnnames []string, columnvalues []strin
 
 /**
 *  GetTables
-* * Return all Tables Created
+* * Return all Tables which belongs to a specific database
  */
-func GetTables() []DatabaseTable {
+func GetTables(databasename string) []DatabaseTable {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `select tablename, columnname, columnvalues, primarykey from tables`
-	row, err := db.Query(sqlStatement)
+	sqlStatement := `select tablename, columnname, columnvalues, primarykey from tables where database = $1`
+	row, err := db.Query(sqlStatement, databasename)
 	var Tables []DatabaseTable
 	defer row.Close()
 	for row.Next() {
@@ -78,14 +98,14 @@ func GetTables() []DatabaseTable {
 *  DeleteTables
 * * Delete Table with corresponding name
  */
-func DeleteTables(tablename string) bool {
+func DeleteTables(tablename string, databasename string) bool {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `delete from tables where tablename = $1`
-	row, err := db.Query(sqlStatement, tablename)
+	sqlStatement := `delete from tables where tablename = $1 and database = $2`
+	row, err := db.Query(sqlStatement, tablename, databasename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
@@ -97,19 +117,36 @@ func DeleteTables(tablename string) bool {
 *  TableExists
 * * Check if a Table Does Exists or not
  */
-func TableExists(tableName string) bool {
+func TableExists(tableName string, databasename string) bool {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `select tablename from tables where tablename = $1`
-	row, err := db.Query(sqlStatement, tableName)
+	sqlStatement := `select tablename from tables where tablename = $1 and databasename = $2`
+	row, err := db.Query(sqlStatement, tableName, databasename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
 	}
 	return true
+}
+
+/**
+Delete a Table
+*/
+func Droptable(tablename string, databasename string) {
+	postgresconnection := initConnection()
+	db, err := sql.Open("postgres", postgresconnection)
+	if err != nil {
+		panic(err)
+	}
+	sqlStatement := `delete from tables where tablename = $1 and database = $2`
+	row, err := db.Query(sqlStatement, tablename, databasename)
+	if err != nil {
+		fmt.Println(row)
+		panic(err)
+	}
 }
 
 /**
@@ -167,31 +204,14 @@ func CreateNewRelation(tablename1 string, tablename2 string) {
 *  AddprimaryKey
 * * Add a Primarykey to the table
  */
-func AddprimaryKey(columnname string, tablename string) {
+func AddprimaryKey(columnname string, tablename string, databasename string) {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `Update tables set primarykey =$1 where tablename = $2`
-	row, err := db.Query(sqlStatement, columnname, tablename)
-	if err != nil {
-		fmt.Println(row)
-		panic(err)
-	}
-}
-
-/**
-Delete a Table
-*/
-func Droptable(tablename string) {
-	postgresconnection := initConnection()
-	db, err := sql.Open("postgres", postgresconnection)
-	if err != nil {
-		panic(err)
-	}
-	sqlStatement := `delete from tables where tablename = $1`
-	row, err := db.Query(sqlStatement, tablename)
+	sqlStatement := `Update tables set primarykey =$1 where tablename = $2 and database = $3`
+	row, err := db.Query(sqlStatement, columnname, tablename, databasename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
@@ -201,15 +221,15 @@ func Droptable(tablename string) {
 /**
 Get PrimaryKey
 */
-func GetPrimaryKey(tablename string) string {
+func GetPrimaryKey(tablename string, databasename string) string {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
 	var PrimaryKey string
-	sqlStatement := `select primarykey from tables where tablename=$1`
-	row, err := db.Query(sqlStatement, tablename)
+	sqlStatement := `select primarykey from tables where tablename=$1 and databasename =$2`
+	row, err := db.Query(sqlStatement, tablename, databasename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
