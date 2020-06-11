@@ -4,15 +4,22 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/gorilla/sessions"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
+)
+
+/* Cookie Set-up and Information*/
+var (
+	key   = []byte("super-secret-key")
+	store = sessions.NewCookieStore(key)
 )
 
 const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	Password = ""
+	Password = "tarekandamr12/"
 	dbname   = "dbdiagram"
 )
 
@@ -28,31 +35,31 @@ func initConnection() string {
 	return postgresconnection
 }
 
-/**
-*  CreateNewDatabase
-* * Create a New Database
- */
-func CreateNewDatabase(databasename string) {
-	postgresconnection := initConnection()
-	db, err := sql.Open("postgres", postgresconnection)
-	if err != nil {
-		panic(err)
-	}
-	sqlStatement := `INSERT INTO database(databasename)
-                    Values ($1)`
-	row, err := db.Query(sqlStatement, databasename)
-	if err != nil {
-		fmt.Println(row)
-		panic(err)
-	}
+// /**
+// *  CreateNewDatabase
+// * * Create a New Database
+//  */
+// func CreateNewDatabase(databasename string) {
+// 	postgresconnection := initConnection()
+// 	db, err := sql.Open("postgres", postgresconnection)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	sqlStatement := `INSERT INTO database(databasename)
+//                     Values ($1)`
+// 	row, err := db.Query(sqlStatement, databasename)
+// 	if err != nil {
+// 		fmt.Println(row)
+// 		panic(err)
+// 	}
 
-}
+// }
 
 /**
 *  CreateNewTable
 * * Create a New Table
  */
-func CreateNewTable(databasename string, tableName string, columnnames []string, columnvalues []string) {
+func CreateNewTable(tableName string, columnnames []string, columnvalues []string) {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
@@ -70,16 +77,16 @@ func CreateNewTable(databasename string, tableName string, columnnames []string,
 
 /**
 *  GetTables
-* * Return all Tables which belongs to a specific database
+* * Return all Tables
  */
-func GetTables(databasename string) []DatabaseTable {
+func GetTables() []DatabaseTable {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `select tablename, columnname, columnvalues, primarykey from tables where database = $1`
-	row, err := db.Query(sqlStatement, databasename)
+	sqlStatement := `select tablename, columnname, columnvalues, primarykey from tables`
+	row, err := db.Query(sqlStatement)
 	var Tables []DatabaseTable
 	defer row.Close()
 	for row.Next() {
@@ -104,7 +111,7 @@ func DeleteTables(tablename string, databasename string) bool {
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `delete from tables where tablename = $1 and database = $2`
+	sqlStatement := `delete from tables where tablename = $1`
 	row, err := db.Query(sqlStatement, tablename, databasename)
 	if err != nil {
 		fmt.Println(row)
@@ -117,14 +124,14 @@ func DeleteTables(tablename string, databasename string) bool {
 *  TableExists
 * * Check if a Table Does Exists or not
  */
-func TableExists(tableName string, databasename string) bool {
+func TableExists(tableName string) bool {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `select tablename from tables where tablename = $1 and databasename = $2`
-	row, err := db.Query(sqlStatement, tableName, databasename)
+	sqlStatement := `select tablename from tables where tablename = $1`
+	row, err := db.Query(sqlStatement, tableName)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
@@ -135,14 +142,14 @@ func TableExists(tableName string, databasename string) bool {
 /**
 Delete a Table
 */
-func Droptable(tablename string, databasename string) {
+func Droptable(tablename string) {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `delete from tables where tablename = $1 and database = $2`
-	row, err := db.Query(sqlStatement, tablename, databasename)
+	sqlStatement := `delete from tables where tablename = $1`
+	row, err := db.Query(sqlStatement, tablename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
@@ -204,14 +211,14 @@ func CreateNewRelation(tablename1 string, tablename2 string) {
 *  AddprimaryKey
 * * Add a Primarykey to the table
  */
-func AddprimaryKey(columnname string, tablename string, databasename string) {
+func AddprimaryKey(columnname string, tablename string) {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `Update tables set primarykey =$1 where tablename = $2 and database = $3`
-	row, err := db.Query(sqlStatement, columnname, tablename, databasename)
+	sqlStatement := `Update tables set primarykey =$1 where tablename = $2`
+	row, err := db.Query(sqlStatement, columnname, tablename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
@@ -221,15 +228,15 @@ func AddprimaryKey(columnname string, tablename string, databasename string) {
 /**
 Get PrimaryKey
 */
-func GetPrimaryKey(tablename string, databasename string) string {
+func GetPrimaryKey(tablename string) string {
 	postgresconnection := initConnection()
 	db, err := sql.Open("postgres", postgresconnection)
 	if err != nil {
 		panic(err)
 	}
 	var PrimaryKey string
-	sqlStatement := `select primarykey from tables where tablename=$1 and databasename =$2`
-	row, err := db.Query(sqlStatement, tablename, databasename)
+	sqlStatement := `select primarykey from tables where tablename=$1`
+	row, err := db.Query(sqlStatement, tablename)
 	if err != nil {
 		fmt.Println(row)
 		panic(err)
@@ -240,3 +247,22 @@ func GetPrimaryKey(tablename string, databasename string) string {
 	}
 	return PrimaryKey
 }
+
+// /**
+// Get Database with corresponding name
+// */
+// func GetDatabase(databasename string) bool {
+// 	postgresconnection := initConnection()
+// 	db, err := sql.Open("postgres", postgresconnection)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	var PrimaryKey string
+// 	sqlStatement := `select databasename from database where databasename =$1`
+// 	row, err := db.Query(sqlStatement, databasename)
+// 	if err != nil {
+// 		fmt.Println(row)
+// 		panic(err)
+// 	}
+// 	return row.Next()
+// }

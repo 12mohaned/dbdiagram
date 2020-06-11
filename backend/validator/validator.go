@@ -29,7 +29,7 @@ func CheckTable(table string) bool {
 ** Check the Database keyword
 **/
 func CheckDatabase(databasename string) bool {
-	if strings.Contains(strings.ToLower(table), "database") {
+	if strings.Contains(strings.ToLower(databasename), "database") {
 		return true
 	}
 	return false
@@ -46,8 +46,8 @@ func ValidateTableName(databasename string) bool {
 /**
 ** Validate the Table Name
 **/
-func ValidateDatabaseName(TableName string) bool {
-	isValid, _ := regexp.MatchString("[a-zA-Z]{3,40}", TableName)
+func ValidateDatabaseName(databasename string) bool {
+	isValid, _ := regexp.MatchString("[a-zA-Z]{3,40}", databasename)
 	return isValid
 }
 

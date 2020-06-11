@@ -2,6 +2,8 @@
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Home</title>
             <style>
+                #draggable { width: 150px; height: 150px; padding: 0.5em; }
+
             * {box-sizing: border-box;}
             
             body { 
@@ -78,7 +80,8 @@
             </style>
             <body>
          <head>
-           
+            <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+            <link rel="stylesheet" href="/resources/demos/style.css">
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
             <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
             <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -86,10 +89,9 @@
              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
              <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
                      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
-
-                     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/resources/demos/style.css">
-            </head>
+                     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+                     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+                    </head>
 
             <div class="header">
                 <div class="header-right">
@@ -119,20 +121,16 @@
 <p style="background:dimgrey;">{{ .Columnname}} (PK)</p>
         {{ else }}
         <p>{{ .Columnname}}</p>
-        {{ end}}
+        {{end}}
         {{end}}
       </div>
       {{end}}
   </div>
 </div>
-
-
-
 </body>
 <script>
     $( function() {
-    $(".mydiv").draggable();
-
-  } );
-  </script>
+      $( ".mydiv" ).draggable();
+    } );
+    </script>
 </html>
