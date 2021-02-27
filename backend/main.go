@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-<<<<<<< HEAD
-||||||| merged common ancestors
 const (
 	host     = "localhost"
 	port     = 5432
@@ -26,24 +24,6 @@ type Database struct {
 	Tables       Tables
 }
 
-=======
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	Password = "tarekandamr12/"
-	dbname   = "dbdiagram"
-)
-
-/*
-Database Struct
-*/
-type Database struct {
-	DatabaseName string
-	Tables       Tables
-}
-
->>>>>>> 8285db913c20e81c9718394c4c29d01746bd5056
 /*
 Table Struct
 */
